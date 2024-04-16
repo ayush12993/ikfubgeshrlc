@@ -15,18 +15,23 @@ const WaifuImage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loadedCount, setLoadedCount] = useState<number>(5);
 
-  const fetchImages = useCallback(async (count: number) => {
-    setIsLoading(true);
-    const newImages = [];
-    for (let i = 0; i < count; i++) {
-      const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-      const response = await fetch(`https://api.waifu.pics/nsfw/${randomCategory}`);
-      const data = await response.json();
+ const fetchImages = useCallback(async (count: number) => {
+  setIsLoading(true);
+  const newImages = [];
+
+  for (let i = 0; i < count; i++) {
+    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+    const response = await fetch(`https://api.waifu.pics/nsfw/${randomCategory}?gif=true`);
+    const data = await response.json();
+
+    if (data.url && data.url.endsWith('.gif')) {
       newImages.push(data.url);
     }
-    setImageUrls((prevUrls) => [...prevUrls, ...newImages]);
-    setIsLoading(false);
-  }, []);
+  }
+
+  setImageUrls((prevUrls) => [...prevUrls, ...newImages]);
+  setIsLoading(false);
+}, []);
 
   useEffect(() => {
     fetchImages(loadedCount);
